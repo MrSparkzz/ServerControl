@@ -1,26 +1,26 @@
 package net.sparkzz.servercontrol;
 
-import org.slf4j.Logger;
+import net.sparkzz.servercontrol.command.Broadcast;
+import org.spongepowered.api.Server;
 import org.spongepowered.api.event.Subscribe;
 import org.spongepowered.api.event.state.PreInitializationEvent;
 import org.spongepowered.api.plugin.Plugin;
+import org.spongepowered.api.service.command.CommandService;
 
 /**
  * @author Brendon
  * @since April 28, 2015
  */
-@Plugin(id = "ServerControl", name = "Server Control", version = "0.1DEV")
+@Plugin(id = "ServerControl", name = "Server Control", version = "0.1-DEV")
 public class ServerControl {
 
-	@com.google.inject.Inject
-	private Logger logger;
-
-	public Logger getLogger() {
-		return logger;
-	}
+	private static Server server;
 
 	@Subscribe
 	public void onServerStart(PreInitializationEvent event) {
-		getLogger().info("Twerking..");
+		this.server = event.getGame().getServer();
+
+		CommandService service = event.getGame().getCommandDispatcher();
+		service.register(this, new Broadcast(server), "broadcast");
 	}
 }
