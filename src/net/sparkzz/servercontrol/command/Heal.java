@@ -18,19 +18,17 @@ import java.util.List;
  * @author Brendon
  * @since April 30, 2015
  */
-public class Teleport extends Utility implements CommandCallable {
+public class Heal extends Utility implements CommandCallable {
 
 	private final Server server;
-	private final Optional<String> desc = Optional.of("Teleport around the world");
-	private final Optional<String> help = Optional.of("Teleport around the world");
-	private final String permission[] = {"server.teleport", "server.teleport.others"};
+	private final Optional<String> desc = Optional.of("Heal yourself or another player");
+	private final Optional<String> help = Optional.of("Heal yourself or another player");
+	private final String permission[] = {"server.heal", "server.heal.other"};
 
-	public Teleport(Server server) {
+	public Heal(Server server) {
 		this.server = server;
 	}
 
-	// TODO: store player's last location to use the "/back" command
-	// TODO: make the command better /tp John,Donny,xXRazerXx Jimmy or /tp Jim,Danny x y z or other
 	@Override
 	public Optional<CommandResult> process(CommandSource source, String arguments) throws CommandException {
 		if (!testPermission(source)) {
@@ -39,49 +37,28 @@ public class Teleport extends Utility implements CommandCallable {
 		}
 
 		if (arguments.equals("")) {
-			source.sendMessage(getUsage(source));
-			return result.EMPTY.getResult();
-		}
-
-		String args[] = arguments.split(" ");
-
-		if (args.length == 1) {
 			if (!(source instanceof Player)) {
 				log.info("Silly console, you cannot teleport!");
 				return result.SUCCESS.getResult();
 			}
 
 			Player player = (Player) source;
-			Player target = server.getPlayer(args[0]).get();
 
-			if (target == null) {
-				source.sendMessage(Texts.of("Player " + args[0] + " could not be found!"));
-				return result.SUCCESS.getResult();
-			}
-
-			player.setLocation(target.getLocation());
+			player.getHealthData().setHealth(player.getHealthData().getMaxHealth());
 		}
 
-		if (args.length == 2) {
-			if (!source.hasPermission(permission[1])) {
-				source.sendMessage(Texts.of("You are not permitted to teleport others!"));
-				return result.SUCCESS.getResult();
-			}
+		String args[] = arguments.split(" ");
 
-			Player first = server.getPlayer(args[0]).get(), second = server.getPlayer(args[1]).get();
+		if (args.length > 1) result.EMPTY.getResult();
 
-			if (first == null) {
-				source.sendMessage(Texts.of("Player " + args[0] + " could not be found!"));
-				return result.SUCCESS.getResult();
-			}
+		Optional<Player> target = server.getPlayer(args[0]);
 
-			if (second == null) {
-				source.sendMessage(Texts.of("Player " + args[1] + " could not be found!"));
-				return result.SUCCESS.getResult();
-			}
-
-			first.setLocation(second.getLocation());
+		if (target == null) {
+			source.sendMessage(Texts.of("Player " + args[0] + " could not be found!"));
+			return result.SUCCESS.getResult();
 		}
+
+		target.get().getHealthData().setHealth(target.get().getHealthData().getMaxHealth());
 
 		return result.SUCCESS.getResult();
 	}
@@ -103,7 +80,7 @@ public class Teleport extends Utility implements CommandCallable {
 
 	@Override
 	public Text getUsage(CommandSource source) {
-		return Texts.of("/broadcast [MESSAGE..]");
+		return Texts.of("/heal [player]");
 	}
 
 	public List<String> getSuggestions(CommandSource source, String arguments) throws CommandException {

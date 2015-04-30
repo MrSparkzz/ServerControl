@@ -88,6 +88,11 @@ public class Gamemode extends Utility implements CommandCallable {
 
 			Optional<Player> target = server.getPlayer(args[1]);
 
+			if (target == null) {
+				source.sendMessage(Texts.of("Player " + args[0] + " could not be found!"));
+				return result.SUCCESS.getResult();
+			}
+
 			if (!target.equals(source))
 				change(source, target.get(), args[0], false);
 			else change(source, target.get(), args[0], true);
@@ -194,7 +199,7 @@ public class Gamemode extends Utility implements CommandCallable {
 
 	@Override
 	public Text getUsage(CommandSource source) {
-		return Texts.of("/gamemode <0-3> <player>");
+		return Texts.of("/gamemode <mode> [player]");
 	}
 
 	public List<String> getSuggestions(CommandSource source, String arguments) throws CommandException {
