@@ -28,7 +28,7 @@ public class ServerControl {
 	public void onServerStart(PreInitializationEvent event) {
 		this.server = event.getGame().getServer();
 
-		Utility.init(logger);
+		Utility.init(event.getGame(), logger);
 
 		new Register(this, server, event);
 
