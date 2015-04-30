@@ -1,11 +1,10 @@
 package net.sparkzz.servercontrol;
 
-import net.sparkzz.servercontrol.command.Broadcast;
+import net.sparkzz.servercontrol.util.Register;
 import org.spongepowered.api.Server;
 import org.spongepowered.api.event.Subscribe;
 import org.spongepowered.api.event.state.PreInitializationEvent;
 import org.spongepowered.api.plugin.Plugin;
-import org.spongepowered.api.service.command.CommandService;
 
 /**
  * @author Brendon
@@ -20,7 +19,6 @@ public class ServerControl {
 	public void onServerStart(PreInitializationEvent event) {
 		this.server = event.getGame().getServer();
 
-		CommandService service = event.getGame().getCommandDispatcher();
-		service.register(this, new Broadcast(server), "broadcast");
+		new Register(server, event);
 	}
 }
