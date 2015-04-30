@@ -1,6 +1,7 @@
 package net.sparkzz.servercontrol.command;
 
 import com.google.common.base.Optional;
+import net.sparkzz.servercontrol.util.Utility;
 import org.spongepowered.api.Server;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.Texts;
@@ -16,7 +17,7 @@ import java.util.List;
  * @author Brendon
  * @since April 28, 2015
  */
-public class Broadcast implements CommandCallable {
+public class Broadcast extends Utility implements CommandCallable {
 
 	private final Server server;
 	private final Optional<String> desc = Optional.of("Announces a message to all players");

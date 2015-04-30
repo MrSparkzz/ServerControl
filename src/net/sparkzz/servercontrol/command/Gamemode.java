@@ -42,7 +42,7 @@ public class Gamemode extends Utility implements CommandCallable {
 	public Optional<CommandResult> process(CommandSource source, String arguments) throws CommandException {
 		if (!testPermission(source)) {
 			source.sendMessage(Texts.of("You are not permitted to use this command!"));
-			return Optional.of(CommandResult.empty());
+			return Optional.of(CommandResult.success());
 		}
 
 		String args[] = arguments.split(" ");
@@ -57,6 +57,8 @@ public class Gamemode extends Utility implements CommandCallable {
 
 			if (player.hasPermission(permission[3]))
 				switcher(player);
+
+			return Optional.of(CommandResult.success());
 		}
 
 		if (args.length == 1) {
@@ -68,14 +70,46 @@ public class Gamemode extends Utility implements CommandCallable {
 			Player player = (Player) source;
 
 			if (player.hasPermission(permission[3]))
-				change(player, args[0]);
+				change(player, player, args[0], true);
+
+			return Optional.of(CommandResult.success());
 		}
 
-		return Optional.of(CommandResult.success());
+		if (args.length == 2) {
+			if (!source.hasPermission(permission[4])) {
+				source.sendMessage(Texts.of("You are not permitted to use this command!"));
+				return Optional.of(CommandResult.success());
+			}
+
+			if (!server.getOnlinePlayers().contains(args[1])) {
+				source.sendMessage(Texts.of("Player " + args[1] + " could not be found!"));
+				return Optional.of(CommandResult.success());
+			}
+
+			Optional<Player> target = server.getPlayer(args[1]);
+
+			if (!target.equals(source))
+				change(source, target.get(), args[0], false);
+			else change(source, target.get(), args[0], true);
+
+			return Optional.of(CommandResult.success());
+		}
+
+		return Optional.of(CommandResult.empty());
 	}
 
-	private void change(Player player, String gamemode) {
+	private void change(CommandSource source, Player target, String gamemode, boolean self) {
 		int selected = -1;
+		String prefix, permit;
+
+		if (self) {
+			prefix = "You are already in ";
+			permit = "You are not permitted to enter ";
+		} else {
+			prefix = target.getName() + " is already in ";
+			permit = "You are not permitted to put others in ";
+		}
+
 
 		for (int i = 0; i < mode.length; i++) {
 			if (Arrays.asList(mode[i]).contains(gamemode)) selected = i;
@@ -83,40 +117,41 @@ public class Gamemode extends Utility implements CommandCallable {
 
 		switch (selected) {
 			case 0:
-				if (player.getGameModeData().getGameMode().equals(GameModes.SURVIVAL))
-					player.sendMessage(Texts.of("You are already in survival mode!"));
+				if (target.getGameModeData().getGameMode().equals(GameModes.SURVIVAL))
+					source.sendMessage(Texts.of(prefix + "survival mode!"));
 				else
-					player.getGameModeData().setGameMode(GameModes.SURVIVAL);
+					target.getGameModeData().setGameMode(GameModes.SURVIVAL);
 				break;
 			case 1:
-				if (!player.hasPermission(permission[1])) {
-					player.sendMessage(Texts.of("You are not permitted to enter creative mode!"));
+				if (!target.hasPermission(permission[1])) {
+					source.sendMessage(Texts.of(permit));
 					break;
 				}
 
-				if (player.getGameModeData().getGameMode().equals(GameModes.CREATIVE))
-					player.sendMessage(Texts.of("You are already in creative mode!"));
+				if (target.getGameModeData().getGameMode().equals(GameModes.CREATIVE))
+					source.sendMessage(Texts.of(prefix + "creative mode!"));
 				else
-					player.getGameModeData().setGameMode(GameModes.CREATIVE);
+					target.getGameModeData().setGameMode(GameModes.CREATIVE);
 				break;
 			case 2:
-				if (player.getGameModeData().getGameMode().equals(GameModes.ADVENTURE))
-					player.sendMessage(Texts.of("You are already in adventure mode!"));
+				if (target.getGameModeData().getGameMode().equals(GameModes.ADVENTURE))
+					source.sendMessage(Texts.of(prefix + "adventure mode!"));
 				else
-					player.getGameModeData().setGameMode(GameModes.ADVENTURE);
+					target.getGameModeData().setGameMode(GameModes.ADVENTURE);
 				break;
 			case 3:
-				if (!player.hasPermission(permission[2])) {
-					player.sendMessage(Texts.of("You are not permitted to enter spectator mode!"));
+				if (!source.hasPermission(permission[2])) {
+					target.sendMessage(Texts.of(permit));
 					break;
 				}
 
-				if (player.getGameModeData().getGameMode().equals(GameModes.SPECTATOR))
-					player.sendMessage(Texts.of("You are already in spectator mode!"));
+				if (target.getGameModeData().getGameMode().equals(GameModes.SPECTATOR))
+					source.sendMessage(Texts.of(prefix + "spectator mode!"));
 				else
-					player.getGameModeData().setGameMode(GameModes.SPECTATOR);
+					target.getGameModeData().setGameMode(GameModes.SPECTATOR);
 				break;
 			default:
+				target.sendMessage(Texts.of("Invalid arguments!"));
 				break;
 		}
 	}
@@ -159,7 +194,7 @@ public class Gamemode extends Utility implements CommandCallable {
 
 	@Override
 	public Text getUsage(CommandSource source) {
-		return Texts.of("/broadcast [MESSAGE..]");
+		return Texts.of("/gamemode <0-3> <player>");
 	}
 
 	public List<String> getSuggestions(CommandSource source, String arguments) throws CommandException {
