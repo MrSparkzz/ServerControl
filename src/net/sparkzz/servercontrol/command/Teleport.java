@@ -3,6 +3,7 @@ package net.sparkzz.servercontrol.command;
 import com.google.common.base.Optional;
 import net.sparkzz.servercontrol.util.Utility;
 import org.spongepowered.api.Server;
+import org.spongepowered.api.entity.player.Player;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.Texts;
 import org.spongepowered.api.util.command.CommandCallable;
@@ -15,19 +16,21 @@ import java.util.List;
 
 /**
  * @author Brendon
- * @since April 28, 2015
+ * @since April 30, 2015
  */
-public class Broadcast extends Utility implements CommandCallable {
+public class Teleport extends Utility implements CommandCallable {
 
 	private final Server server;
 	private final Optional<String> desc = Optional.of("Announces a message to all players");
 	private final Optional<String> help = Optional.of("Announce something to all online players");
-	private final String permission = "server.broadcast";
+	private final String permission[] = {"server.teleport", "server.teleport.others"};
 
-	public Broadcast(Server server) {
+	public Teleport(Server server) {
 		this.server = server;
 	}
 
+	// TODO: store player's last location to use the "/back" command
+	// TODO: make the command better /tp John,Donny,xXRazerXx Jimmy or /tp Jim,Danny x y z or other
 	@Override
 	public Optional<CommandResult> process(CommandSource source, String arguments) throws CommandException {
 		if (!testPermission(source)) {
@@ -35,11 +38,49 @@ public class Broadcast extends Utility implements CommandCallable {
 			return result.EMPTY.getResult();
 		}
 
-		if (!arguments.equals(""))
-			server.broadcastMessage(Texts.of("[Broadcast] " + arguments));
-		else {
+		if (arguments.equals("")) {
 			source.sendMessage(getUsage(source));
 			return result.EMPTY.getResult();
+		}
+
+		String args[] = arguments.split(" ");
+
+		if (args.length == 1) {
+			if (!(source instanceof Player)) {
+				log.info("Silly console, you cannot teleport!");
+				return result.SUCCESS.getResult();
+			}
+
+			Player player = (Player) source;
+			Player target = server.getPlayer(args[0]).get();
+
+			if (target == null) {
+				source.sendMessage(Texts.of("Player " + args[0] + " could not be found!"));
+				return result.SUCCESS.getResult();
+			}
+
+			player.setLocation(target.getLocation());
+		}
+
+		if (args.length == 2) {
+			if (!source.hasPermission(permission[1])) {
+				source.sendMessage(Texts.of("You are not permitted to teleport others!"));
+				return result.SUCCESS.getResult();
+			}
+
+			Player first = server.getPlayer(args[0]).get(), second = server.getPlayer(args[1]).get();
+
+			if (first == null) {
+				source.sendMessage(Texts.of("Player " + args[0] + " could not be found!"));
+				return result.SUCCESS.getResult();
+			}
+
+			if (second == null) {
+				source.sendMessage(Texts.of("Player " + args[1] + " could not be found!"));
+				return result.SUCCESS.getResult();
+			}
+
+			first.setLocation(second.getLocation());
 		}
 
 		return result.SUCCESS.getResult();
@@ -47,7 +88,7 @@ public class Broadcast extends Utility implements CommandCallable {
 
 	@Override
 	public boolean testPermission(CommandSource source) {
-		return source.hasPermission(permission);
+		return source.hasPermission(permission[0]);
 	}
 
 	@Override

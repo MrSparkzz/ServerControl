@@ -42,7 +42,7 @@ public class Gamemode extends Utility implements CommandCallable {
 	public Optional<CommandResult> process(CommandSource source, String arguments) throws CommandException {
 		if (!testPermission(source)) {
 			source.sendMessage(Texts.of("You are not permitted to use this command!"));
-			return Optional.of(CommandResult.success());
+			return result.SUCCESS.getResult();
 		}
 
 		String args[] = arguments.split(" ");
@@ -50,7 +50,7 @@ public class Gamemode extends Utility implements CommandCallable {
 		if (args.length == 0) {
 			if (!(source instanceof Player)) {
 				log.info("Silly console, gamemodes are for players!");
-				return Optional.of(CommandResult.success());
+				return result.SUCCESS.getResult();
 			}
 
 			Player player = (Player) source;
@@ -58,13 +58,13 @@ public class Gamemode extends Utility implements CommandCallable {
 			if (player.hasPermission(permission[3]))
 				switcher(player);
 
-			return Optional.of(CommandResult.success());
+			return result.SUCCESS.getResult();
 		}
 
 		if (args.length == 1) {
 			if (!(source instanceof Player)) {
 				log.info("Silly console, gamemodes are for players!");
-				return Optional.of(CommandResult.success());
+				return result.SUCCESS.getResult();
 			}
 
 			Player player = (Player) source;
@@ -72,18 +72,18 @@ public class Gamemode extends Utility implements CommandCallable {
 			if (player.hasPermission(permission[3]))
 				change(player, player, args[0], true);
 
-			return Optional.of(CommandResult.success());
+			return result.SUCCESS.getResult();
 		}
 
 		if (args.length == 2) {
 			if (!source.hasPermission(permission[4])) {
 				source.sendMessage(Texts.of("You are not permitted to use this command!"));
-				return Optional.of(CommandResult.success());
+				return result.SUCCESS.getResult();
 			}
 
 			if (!server.getOnlinePlayers().contains(args[1])) {
 				source.sendMessage(Texts.of("Player " + args[1] + " could not be found!"));
-				return Optional.of(CommandResult.success());
+				return result.SUCCESS.getResult();
 			}
 
 			Optional<Player> target = server.getPlayer(args[1]);
@@ -92,10 +92,10 @@ public class Gamemode extends Utility implements CommandCallable {
 				change(source, target.get(), args[0], false);
 			else change(source, target.get(), args[0], true);
 
-			return Optional.of(CommandResult.success());
+			return result.SUCCESS.getResult();
 		}
 
-		return Optional.of(CommandResult.empty());
+		return result.EMPTY.getResult();
 	}
 
 	private void change(CommandSource source, Player target, String gamemode, boolean self) {

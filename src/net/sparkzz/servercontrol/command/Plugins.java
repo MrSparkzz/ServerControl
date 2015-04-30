@@ -34,17 +34,17 @@ public class Plugins extends Utility implements CommandCallable {
 	public Optional<CommandResult> process(CommandSource source, String arguments) throws CommandException {
 		if (!testPermission(source)) {
 			source.sendMessage(Texts.of("You are not permitted to use this command!"));
-			return Optional.of(CommandResult.empty());
+			return result.EMPTY.getResult();
 		}
 
 		if (!arguments.equals("")) {
 			source.sendMessage(getUsage(source));
-			return Optional.of(CommandResult.empty());
+			return result.EMPTY.getResult();
 		}
 
 		source.sendMessage(Texts.of("Plugins: " + getPluginList()));
 
-		return Optional.of(CommandResult.success());
+		return result.SUCCESS.getResult();
 	}
 
 	private String getPluginList() {
