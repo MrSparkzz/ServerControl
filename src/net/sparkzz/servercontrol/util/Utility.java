@@ -12,6 +12,7 @@ public class Utility {
 
 	protected static Game game;
 	protected static org.slf4j.Logger log;
+	protected static Messenger msg;
 
 	protected static enum result {
 		EMPTY(Optional.of(CommandResult.empty())), SUCCESS(Optional.of(CommandResult.success()));

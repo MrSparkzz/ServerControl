@@ -7,7 +7,6 @@ import ninja.leaping.configurate.ConfigurationNode;
 import ninja.leaping.configurate.loader.ConfigurationLoader;
 import org.spongepowered.api.event.Subscribe;
 import org.spongepowered.api.event.state.ServerStartingEvent;
-import org.spongepowered.api.event.state.ServerStoppingEvent;
 import org.spongepowered.api.service.config.DefaultConfig;
 
 import java.io.File;
@@ -21,19 +20,16 @@ import java.io.IOException;
  */
 public class Config {
 
-	@Inject
-	@DefaultConfig(sharedRoot = true)
 	private ConfigurationLoader loader;
-
-	@Inject
-	@DefaultConfig(sharedRoot = true)
 	private File defaultConfig;
 
 	private ConfigurationNode config = null;
 
-	@Subscribe
-	public void onServerStart(ServerStartingEvent event) {
+	public Config(ConfigurationLoader loader, File defaultConfig) {
 		try {
+			this.loader = loader;
+			this.defaultConfig = defaultConfig;
+
 			if (!defaultConfig.exists()) {
 				defaultConfig.createNewFile();
 				config = loader.load();

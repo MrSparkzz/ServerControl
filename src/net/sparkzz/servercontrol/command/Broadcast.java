@@ -31,7 +31,7 @@ public class Broadcast extends Utility implements CommandCallable {
 	@Override
 	public Optional<CommandResult> process(CommandSource source, String arguments) throws CommandException {
 		if (!testPermission(source)) {
-			source.sendMessage(Texts.of("You are not permitted to use this command!"));
+			msg.deny(source, msg.COMMAND);
 			return result.EMPTY.getResult();
 		}
 

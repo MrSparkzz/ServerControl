@@ -8,6 +8,7 @@ import org.spongepowered.api.entity.player.gamemode.GameMode;
 import org.spongepowered.api.entity.player.gamemode.GameModes;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.Texts;
+import org.spongepowered.api.text.format.TextColors;
 import org.spongepowered.api.util.command.CommandCallable;
 import org.spongepowered.api.util.command.CommandException;
 import org.spongepowered.api.util.command.CommandResult;
@@ -41,7 +42,7 @@ public class Gamemode extends Utility implements CommandCallable {
 	@Override
 	public Optional<CommandResult> process(CommandSource source, String arguments) throws CommandException {
 		if (!testPermission(source)) {
-			source.sendMessage(Texts.of("You are not permitted to use this command!"));
+			msg.deny(source, msg.COMMAND);
 			return result.SUCCESS.getResult();
 		}
 
@@ -77,19 +78,19 @@ public class Gamemode extends Utility implements CommandCallable {
 
 		if (args.length == 2) {
 			if (!source.hasPermission(permission[4])) {
-				source.sendMessage(Texts.of("You are not permitted to use this command!"));
+				msg.deny(source, msg.COMMAND);
 				return result.SUCCESS.getResult();
 			}
 
 			if (!server.getOnlinePlayers().contains(args[1])) {
-				source.sendMessage(Texts.of("Player " + args[1] + " could not be found!"));
+				msg.notFound(source, args[1]);
 				return result.SUCCESS.getResult();
 			}
 
 			Optional<Player> target = server.getPlayer(args[1]);
 
 			if (target == null) {
-				source.sendMessage(Texts.of("Player " + args[0] + " could not be found!"));
+				msg.notFound(source, args[0]);
 				return result.SUCCESS.getResult();
 			}
 
@@ -108,11 +109,11 @@ public class Gamemode extends Utility implements CommandCallable {
 		String prefix, permit;
 
 		if (self) {
-			prefix = "You are already in ";
-			permit = "You are not permitted to enter ";
+			prefix = TextColors.RED + "You are already in ";
+			permit = TextColors.RED + "You are not permitted to enter ";
 		} else {
-			prefix = target.getName() + " is already in ";
-			permit = "You are not permitted to put others in ";
+			prefix = TextColors.GOLD + target.getName() + TextColors.RED + " is already in ";
+			permit = TextColors.RED + "You are not permitted to put others in ";
 		}
 
 

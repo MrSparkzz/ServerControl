@@ -6,6 +6,7 @@ import org.spongepowered.api.Server;
 import org.spongepowered.api.plugin.PluginContainer;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.Texts;
+import org.spongepowered.api.text.format.TextColors;
 import org.spongepowered.api.util.command.CommandCallable;
 import org.spongepowered.api.util.command.CommandException;
 import org.spongepowered.api.util.command.CommandResult;
@@ -29,11 +30,10 @@ public class Plugins extends Utility implements CommandCallable {
 	}
 
 	// TODO: getPlugins() returns mods as well, try to figure a way to split them
-	// TODO: implement colors
 	@Override
 	public Optional<CommandResult> process(CommandSource source, String arguments) throws CommandException {
 		if (!testPermission(source)) {
-			source.sendMessage(Texts.of("You are not permitted to use this command!"));
+			msg.deny(source, msg.COMMAND);
 			return result.EMPTY.getResult();
 		}
 
@@ -47,7 +47,7 @@ public class Plugins extends Utility implements CommandCallable {
 		return result.SUCCESS.getResult();
 	}
 
-	private String getPluginList() {
+	private Text getPluginList() {
 		StringBuilder list = new StringBuilder();
 		Collection<PluginContainer> plugins = game.getPluginManager().getPlugins();
 		List<String> exclude = new ArrayList<String>(Arrays.asList("Minecraft", "Minecraft Coder Pack", "Forge Mod Loader", "Minecraft Forge", "Sponge"));
@@ -57,15 +57,15 @@ public class Plugins extends Utility implements CommandCallable {
 		for (PluginContainer plugin : plugins) {
 			if (!exclude.contains(plugin.getName())) {
 				if (list.length() > 0) {
-					//list.append(/*white*/);
+					list.append(TextColors.WHITE);
 					list.append(", ");
 				}
 
-				list.append(/*green?*/ plugin.getName());
+				list.append(TextColors.GREEN + plugin.getName());
 			} else i--;
 		}
 
-		return /*dark gray*/ "(" /*pink*/ + i + /*dark gray*/ "): " + list.toString();
+		return Texts.of(TextColors.DARK_GRAY + "(" + TextColors.LIGHT_PURPLE + i + TextColors.DARK_GRAY + "): " + list.toString());
 	}
 
 	@Override

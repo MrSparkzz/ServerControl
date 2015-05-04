@@ -34,7 +34,7 @@ public class Teleport extends Utility implements CommandCallable {
 	@Override
 	public Optional<CommandResult> process(CommandSource source, String arguments) throws CommandException {
 		if (!testPermission(source)) {
-			source.sendMessage(Texts.of("You are not permitted to use this command!"));
+			msg.deny(source, msg.COMMAND);
 			return result.EMPTY.getResult();
 		}
 
@@ -55,7 +55,7 @@ public class Teleport extends Utility implements CommandCallable {
 			Player target = server.getPlayer(args[0]).get();
 
 			if (target == null) {
-				source.sendMessage(Texts.of("Player " + args[0] + " could not be found!"));
+				msg.notFound(source, args[0]);
 				return result.SUCCESS.getResult();
 			}
 
@@ -64,19 +64,19 @@ public class Teleport extends Utility implements CommandCallable {
 
 		if (args.length == 2) {
 			if (!source.hasPermission(permission[1])) {
-				source.sendMessage(Texts.of("You are not permitted to teleport others!"));
+				msg.deny(source, "teleport others!");
 				return result.SUCCESS.getResult();
 			}
 
 			Player first = server.getPlayer(args[0]).get(), second = server.getPlayer(args[1]).get();
 
 			if (first == null) {
-				source.sendMessage(Texts.of("Player " + args[0] + " could not be found!"));
+				msg.notFound(source, args[0]);
 				return result.SUCCESS.getResult();
 			}
 
 			if (second == null) {
-				source.sendMessage(Texts.of("Player " + args[1] + " could not be found!"));
+				msg.notFound(source, args[1]);
 				return result.SUCCESS.getResult();
 			}
 
@@ -103,7 +103,7 @@ public class Teleport extends Utility implements CommandCallable {
 
 	@Override
 	public Text getUsage(CommandSource source) {
-		return Texts.of("/broadcast [MESSAGE..]");
+		return Texts.of("/teleport <player> [player]");
 	}
 
 	public List<String> getSuggestions(CommandSource source, String arguments) throws CommandException {

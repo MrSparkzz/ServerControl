@@ -6,6 +6,7 @@ import org.spongepowered.api.Server;
 import org.spongepowered.api.entity.player.Player;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.Texts;
+import org.spongepowered.api.text.format.TextColors;
 import org.spongepowered.api.util.command.CommandCallable;
 import org.spongepowered.api.util.command.CommandException;
 import org.spongepowered.api.util.command.CommandResult;
@@ -32,7 +33,7 @@ public class Heal extends Utility implements CommandCallable {
 	@Override
 	public Optional<CommandResult> process(CommandSource source, String arguments) throws CommandException {
 		if (!testPermission(source)) {
-			source.sendMessage(Texts.of("You are not permitted to use this command!"));
+			msg.deny(source, msg.COMMAND);
 			return result.EMPTY.getResult();
 		}
 
@@ -54,7 +55,7 @@ public class Heal extends Utility implements CommandCallable {
 		Optional<Player> target = server.getPlayer(args[0]);
 
 		if (target == null) {
-			source.sendMessage(Texts.of("Player " + args[0] + " could not be found!"));
+			msg.notFound(source, args[0]);
 			return result.SUCCESS.getResult();
 		}
 
