@@ -34,7 +34,7 @@ public class Teleport extends Utility implements CommandCallable {
 	@Override
 	public Optional<CommandResult> process(CommandSource source, String arguments) throws CommandException {
 		if (!testPermission(source)) {
-			msg.deny(source, msg.COMMAND);
+			msg.deny(source, action.COMMAND);
 			return result.EMPTY.getResult();
 		}
 
@@ -103,7 +103,7 @@ public class Teleport extends Utility implements CommandCallable {
 
 	@Override
 	public Text getUsage(CommandSource source) {
-		return Texts.of("/teleport <player> [player]");
+		return Texts.of("/teleport <player> <player>");
 	}
 
 	public List<String> getSuggestions(CommandSource source, String arguments) throws CommandException {

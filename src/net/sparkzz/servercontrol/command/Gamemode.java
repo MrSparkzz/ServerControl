@@ -42,7 +42,7 @@ public class Gamemode extends Utility implements CommandCallable {
 	@Override
 	public Optional<CommandResult> process(CommandSource source, String arguments) throws CommandException {
 		if (!testPermission(source)) {
-			msg.deny(source, msg.COMMAND);
+			msg.deny(source, action.COMMAND);
 			return result.SUCCESS.getResult();
 		}
 
@@ -78,7 +78,7 @@ public class Gamemode extends Utility implements CommandCallable {
 
 		if (args.length == 2) {
 			if (!source.hasPermission(permission[4])) {
-				msg.deny(source, msg.COMMAND);
+				msg.deny(source, action.COMMAND);
 				return result.SUCCESS.getResult();
 			}
 

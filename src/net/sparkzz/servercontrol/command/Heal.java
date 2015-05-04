@@ -33,7 +33,7 @@ public class Heal extends Utility implements CommandCallable {
 	@Override
 	public Optional<CommandResult> process(CommandSource source, String arguments) throws CommandException {
 		if (!testPermission(source)) {
-			msg.deny(source, msg.COMMAND);
+			msg.deny(source, action.COMMAND);
 			return result.EMPTY.getResult();
 		}
 

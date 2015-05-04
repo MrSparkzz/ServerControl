@@ -3,6 +3,7 @@ package net.sparkzz.servercontrol.command;
 import com.google.common.base.Optional;
 import net.sparkzz.servercontrol.util.Utility;
 import org.spongepowered.api.Server;
+import org.spongepowered.api.entity.player.Player;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.Texts;
 import org.spongepowered.api.util.command.CommandCallable;
@@ -15,16 +16,16 @@ import java.util.List;
 
 /**
  * @author Brendon
- * @since April 28, 2015
+ * @since May 04, 2015
  */
-public class Broadcast extends Utility implements CommandCallable {
+public class Kick extends Utility implements CommandCallable {
 
 	private final Server server;
-	private final Optional<String> desc = Optional.of("Announces a message to all players");
-	private final Optional<String> help = Optional.of("Announce something to all online players");
-	private final String permission = "server.broadcast";
+	private final Optional<String> desc = Optional.of("Kick a player");
+	private final Optional<String> help = Optional.of("Kick a player");
+	private final String permission[] = {"server.kicked", "server.ban.view"};
 
-	public Broadcast(Server server) {
+	public Kick(Server server) {
 		this.server = server;
 	}
 
@@ -35,11 +36,31 @@ public class Broadcast extends Utility implements CommandCallable {
 			return result.EMPTY.getResult();
 		}
 
-		if (!arguments.equals(""))
-			server.broadcastMessage(Texts.of("[Broadcast] " + arguments));
-		else {
+		if (arguments.equals("")) {
 			source.sendMessage(getUsage(source));
 			return result.EMPTY.getResult();
+		}
+
+		String args[] = arguments.split(" ");
+
+		Player player = server.getPlayer(args[0]).get();
+
+		if (player == null) {
+			msg.notFound(source, args[0]);
+			return result.SUCCESS.getResult();
+		}
+
+		if (args.length == 1) {
+			player.kick();
+
+			return result.SUCCESS.getResult();
+		}
+
+		if (args.length > 1) {
+			String reason = msg.buildString(1, args);
+			player.kick(Texts.of(reason));
+
+			return result.SUCCESS.getResult();
 		}
 
 		return result.SUCCESS.getResult();
@@ -47,7 +68,7 @@ public class Broadcast extends Utility implements CommandCallable {
 
 	@Override
 	public boolean testPermission(CommandSource source) {
-		return source.hasPermission(permission);
+		return source.hasPermission(permission[0]);
 	}
 
 	@Override
@@ -62,7 +83,7 @@ public class Broadcast extends Utility implements CommandCallable {
 
 	@Override
 	public Text getUsage(CommandSource source) {
-		return Texts.of("/broadcast [MESSAGE..]");
+		return Texts.of("/kick <player> [REASON..]");
 	}
 
 	public List<String> getSuggestions(CommandSource source, String arguments) throws CommandException {
