@@ -15,7 +15,7 @@ public class Register {
 		CommandService service = event.getGame().getCommandDispatcher();
 
 		service.register(object, new Broadcast(server), "broadcast");
-		service.register(object, new Gamemode(server), "gamemode");
+		service.register(object, new Gamemode(server), "gamemode", "gm");
 		service.register(object, new Heal(server), "heal");
 		service.register(object, new Plugins(server), "plugins");
 		service.register(object, new Teleport(server), "teleport", "tp");
